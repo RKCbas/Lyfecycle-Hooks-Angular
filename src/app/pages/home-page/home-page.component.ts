@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { afterNextRender, afterRender, ChangeDetectionStrategy, Component, effect, OnInit } from '@angular/core';
 
 const log = (...messages: string[]) => {
   console.log(
@@ -13,10 +13,20 @@ const log = (...messages: string[]) => {
   templateUrl: './home-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class HomePageComponent {
+export default class HomePageComponent implements OnInit{
+
   constructor() {
     log('constructor llamado en Home Page')
   }
+
+  basicEffect = effect(( onCleanup )=>{
+    log('effect', " Disparar efectos secundarios")
+
+    onCleanup(()=>{
+      log('onCleanup', " Se Ejecuta cuando el efecto se va a destruir")
+    })
+
+  })
 
   ngOnInit() {
     log('ngOnInit', "	Runs once after Angular has initialized all the component's inputs. ")
@@ -39,5 +49,16 @@ export default class HomePageComponent {
   ngAfterViewChecked() {
     log('ngAfterViewChecked', "	Runs every time the component's view has been checked for changes. ")
   }
+  ngOnDestroy(){
+    log('ngOnDestroy', "	Runs once before the component is destroyed.")
+  }
+
+  afterNextRenderEffect = afterNextRender(()=>{
+    log('afterNextRender', "  	Runs once the next time that all components have been rendered to the DOM..")
+  })
+
+  afterRenderEffect = afterRender(()=>{
+    log('afterRender', "  	Runs every time all components have been rendered to the DOM..")
+  })
 
 }
